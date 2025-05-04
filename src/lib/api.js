@@ -6,9 +6,17 @@ export const signup = async (signupData) => {
 };
 
 export const login = async (loginData) => {
-  const response = await axiosInstance.post("/auth/login", loginData);
-  return response.data;
+  try {
+    const response = await axiosInstance.post("/auth/login", loginData);
+    return response.data;
+  } catch (error) {
+    if (error.code === 'ERR_NETWORK') {
+      throw new Error('Unable to connect to the server. Please make sure the backend is running.');
+    }
+    throw error;
+  }
 };
+
 export const logout = async () => {
   const response = await axiosInstance.post("/auth/logout");
   return response.data;
@@ -19,6 +27,10 @@ export const getAuthUser = async () => {
     const res = await axiosInstance.get("/auth/me");
     return res.data;
   } catch (error) {
+    if (error.code === 'ERR_NETWORK') {
+      console.log("Backend server is not running or not accessible");
+      return null;
+    }
     console.log("Error in getAuthUser:", error);
     return null;
   }
