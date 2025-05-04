@@ -37,7 +37,7 @@ const CallPage = () => {
 
   useEffect(() => {
     const initCall = async () => {
-      if (!tokenData.token || !authUser || !callId) return;
+      if (!tokenData?.token || !authUser || !callId) return;
 
       try {
         console.log("Initializing Stream video client...");
@@ -62,22 +62,32 @@ const CallPage = () => {
 
         setClient(videoClient);
         setCall(callInstance);
+        setIsConnecting(false);
       } catch (error) {
         console.error("Error joining call:", error);
         toast.error("Could not join the call. Please try again.");
-      } finally {
         setIsConnecting(false);
       }
     };
 
     initCall();
-  }, [tokenData, authUser, callId]);
+
+    // Cleanup function
+    return () => {
+      if (call) {
+        call.leave();
+      }
+      if (client) {
+        client.disconnectUser();
+      }
+    };
+  }, [tokenData, authUser, callId, call, client]);
 
   if (isLoading || isConnecting) return <PageLoader />;
 
   return (
     <div className="h-screen flex flex-col items-center justify-center">
-      <div className="relative">
+      <div className="relative w-full h-full">
         {client && call ? (
           <StreamVideo client={client}>
             <StreamCall call={call}>
@@ -97,10 +107,12 @@ const CallPage = () => {
 const CallContent = () => {
   const { useCallCallingState } = useCallStateHooks();
   const callingState = useCallCallingState();
-
   const navigate = useNavigate();
 
-  if (callingState === CallingState.LEFT) return navigate("/");
+  if (callingState === CallingState.LEFT) {
+    navigate("/");
+    return null;
+  }
 
   return (
     <StreamTheme>
