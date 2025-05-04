@@ -1,3 +1,4 @@
+import axios from "axios";
 import { axiosInstance } from "./axios";
 
 export const signup = async (signupData) => {
@@ -7,7 +8,8 @@ export const signup = async (signupData) => {
 
 export const login = async (loginData) => {
   try {
-    const response = await axiosInstance.post("/auth/login", loginData);
+    const response = await axios.post("https://streamify-backend-no3j.onrender.com/api/auth/login", loginData);
+    // const response = await axiosInstance.post("/auth/login", loginData);
     return response.data;
   } catch (error) {
     if (error.code === 'ERR_NETWORK') {
