@@ -1,4 +1,3 @@
-import axios from "axios";
 import { axiosInstance } from "./axios";
 
 export const signup = async (signupData) => {
@@ -8,10 +7,10 @@ export const signup = async (signupData) => {
 
 export const login = async (loginData) => {
   try {
-    const response = await axios.post("https://streamify-backend-no3j.onrender.com/api/auth/login", loginData);
-    // const response = await axiosInstance.post("/auth/login", loginData);
+    const response = await axiosInstance.post("/auth/login", loginData);
     return response.data;
   } catch (error) {
+    console.log(error)
     if (error.code === 'ERR_NETWORK') {
       throw new Error('Unable to connect to the server. Please make sure the backend is running.');
     }
